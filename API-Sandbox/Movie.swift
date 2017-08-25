@@ -15,12 +15,18 @@ struct Movie {
     let price: Double
     let link: String
     let releaseDate: String
+    let poster: String
+    
+    // example
+    // let firstName = userData["results"][0]["name"]["first"].stringValue
     
     init(json: JSON) {
-        self.name = ""
-        self.rightsOwner = ""
-        self.price = 0
-        self.link = ""
-        self.releaseDate = ""
+        self.name = json["im:name"]["label"].stringValue
+        self.rightsOwner = json["rights"]["label"].stringValue
+        self.price = json["im:price"]["attributes"]["amount"].doubleValue
+        self.link = json["link"][0]["attributes"]["href"].stringValue
+        self.releaseDate = json["im:releaseDate"]["attributes"]["label"].stringValue
+        self.poster = json["im:image"][2]["label"].stringValue
+        // print ("\(json["im:image"][0]["label"].stringValue)")
     }
 }

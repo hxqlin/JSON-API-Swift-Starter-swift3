@@ -14,6 +14,8 @@ import AlamofireNetworkActivityIndicator
 
 class ViewController: UIViewController {
 
+    var movie: Movie!
+    
     @IBOutlet weak var movieTitleLabel: UILabel!
     @IBOutlet weak var rightsOwnerLabel: UILabel!
     @IBOutlet weak var releaseDateLabel: UILabel!
@@ -24,9 +26,10 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        exerciseOne()
-        exerciseTwo()
-        exerciseThree()
+        
+        // exerciseOne()
+        // exerciseTwo()
+        // exerciseThree()
         
         let apiToContact = "https://itunes.apple.com/us/rss/topmovies/limit=25/json"
         // This code will call the iTunes top 25 movies endpoint listed above
@@ -36,9 +39,26 @@ class ViewController: UIViewController {
                 if let value = response.result.value {
                     let json = JSON(value)
                     
-                    // Do what you need to with JSON here!
-                    // The rest is all boiler plate code you'll use for API requests
+                    // make movie data into an array of JSON objects
+                    let allMoviesData = json["feed"]["entry"].arrayValue
                     
+                    // turn array of JSON objects into array of Movie structs
+                    var allMovies: [Movie] = []
+                    for movieData in allMoviesData {
+                        let movieToAdd = Movie(json: movieData)
+                        allMovies.append(movieToAdd)
+                    }
+                    
+                    // pick a random number to display a random movie
+                    let rand = Int(arc4random_uniform(24))
+                    self.movie = allMovies[rand]
+
+                    // update fields of the selected movie
+                    self.loadPoster(urlString: self.movie.poster)
+                    self.movieTitleLabel.text = self.movie.name
+                    self.rightsOwnerLabel.text = self.movie.rightsOwner
+                    self.releaseDateLabel.text = self.movie.releaseDate
+                    self.priceLabel.text = String(self.movie.price)
                     
                 }
             case .failure(let error):
@@ -58,6 +78,9 @@ class ViewController: UIViewController {
     }
     
     @IBAction func viewOniTunesPressed(_ sender: AnyObject) {
+        // connect itunes link
+        let itunesLink = self.movie.link
+        UIApplication.shared.openURL(URL(string: itunesLink)!)
         
     }
     
